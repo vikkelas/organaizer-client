@@ -9,6 +9,11 @@ import link from '../assets/images/link.png';
 import headphones from '../assets/images/headphones.png';
 import video from '../assets/images/video.png';
 import clip from '../assets/images/clip.png';
+import doc from '../assets/images/doc.png';
+import pdf from '../assets/images/pdf.png';
+import close from '../assets/images/close.png';
+import audio from '../assets/images/audio-file.png';
+import avi from '../assets/images/avi.png';
 
 const images = {
   logo,
@@ -22,5 +27,10 @@ const images = {
   headphones,
   video,
   clip,
+  doc,
+  pdf,
+  close,
+  audio,
+  avi,
 };
 export default images;

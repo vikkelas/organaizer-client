@@ -5,6 +5,8 @@ export default class RenderPage {
     this.conteiner = document.querySelector('.conteiner');
     this.images = images;
     this.btnHeaderBox = null;
+    this.header = null;
+    this.previewBox = null;
   }
 
   init() {
@@ -28,12 +30,15 @@ export default class RenderPage {
                 <img name="btnVoice" src="${this.images.voice}" class="organaizer__icon">
               </div>                       
                 <input class="organaizer__icon--input" multiple id='fileAdd' type="file" accept="image/*, video/*,.doc,.docx,.pdf,audio/*">
-                <img name="btnClip" src="${this.images.clip}" class="organaizer__icon">
-            </div>                     
+                <img id="btnClip" src="${this.images.clip}" class="organaizer__icon">
+            </div>
+            <div class="preview-box">
+            <div>                     
          </div>
       </div>
     `);
     this.conteiner.insertAdjacentElement('beforeend', organaizer);
+    this.previewBox = document.querySelector('.preview-box');
   }
 
   renderMenu() {
@@ -102,5 +107,51 @@ export default class RenderPage {
       this.btnHeaderBox.style.display = 'flex';
       setTimeout(() => this.btnHeaderBox.classList.remove('organaizer__header-btn--deactive'), 100);
     }, 400);
+  }
+
+  previewAddCard(arrFiles) {
+    this.previewBox.innerHTML = '';
+    this.previewBox = document.querySelector('.preview-box');
+    arrFiles.forEach((item) => {
+      const preview = document.createElement('div');
+      preview.classList.add('preview-box__card');
+      if (item.type.includes('image')) {
+        const img = document.createElement('img');
+        img.classList.add('preview__img');
+        img.src = URL.createObjectURL(item);
+        img.addEventListener('load', () => URL.revokeObjectURL(img.src));
+        preview.insertAdjacentElement('beforeend', img);
+        preview.insertAdjacentHTML('beforeend', `
+        <img class="preview__close" src="${this.images.close}">
+        <div class="preview__name">${item.name}</div>
+        `);
+      }
+      if (!item.type.includes('image')) {
+        let src = '';
+        if (item.type.includes('audio')) {
+          src = 'audio';
+        }
+        if (item.type.includes('pdf')) {
+          src = 'pdf';
+        }
+        if (item.type.includes('doc')) {
+          src = 'doc';
+        }
+        if (item.type.includes('video')) {
+          src = 'avi';
+        }
+        preview.insertAdjacentHTML('beforeend', `
+        <img class="preview__img" src="${images[src]}">
+        <img class="preview__close" src="${this.images.close}">
+        <div class="preview__name">${item.name}</div>
+    `);
+      }
+      this.previewBox.insertAdjacentElement('beforeend', preview);
+    });
+  }
+
+  deletPreveiw(arr, element) {
+
+
   }
 }
