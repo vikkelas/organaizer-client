@@ -1,12 +1,16 @@
 import images from './images';
+import emojiArr from './emojiArr';
 
 export default class RenderPage {
   constructor() {
     this.conteiner = document.querySelector('.conteiner');
     this.images = images;
+    this.emojiArr = emojiArr;
     this.btnHeaderBox = null;
     this.header = null;
     this.previewBox = null;
+    this.footer = null;
+    this.smileBox = null;
   }
 
   init() {
@@ -18,17 +22,20 @@ export default class RenderPage {
             <img src="${this.images.logo}" class="organaizer__logo">          
             <div class="organaizer__header-btn">
                <img name="btnSearch" class="organaizer__icon" src="${this.images.search}">
-               <img name="btnMenu" class="organaizer__icon" src="${this.images.dots}">
+               <img id="btnMenu" class="organaizer__icon" src="${this.images.dots}">
             </div>
          </div>
          <div class="organaizer__main"></div>
          <div class="organaizer__footer">
           <div class="footer-conteiner">
-              <img name="btnSmile" src="${this.images.smile}" class="organaizer__icon">
-              <textarea class="organaizer__footer-send" rows="1"></textarea>
+              <img id="btnSmile" src="${this.images.smile}" class="organaizer__icon organaizer__icon--mobile">
+              <img id="btnClose" src="${this.images.close}" class="organaizer__icon organaizer__icon--deactive">
+              <textarea class="organaizer__footer-send" cols="100" rows="1"></textarea>
               <div class="organaizer__box-icon">
-                <img name="btnVoice" src="${this.images.voice}" class="organaizer__icon">
-              </div>                       
+                <img id="btnVoice" src="${this.images.voice}" class="organaizer__icon">
+                <img id="btnVideo" src="${this.images.photo}" class="organaizer__icon">
+              </div>
+                <img id="btnSend" src="${this.images.send}" class="organaizer__icon organaizer__icon--deactive">                       
                 <input class="organaizer__icon--input" multiple id='fileAdd' type="file" accept="image/*, video/*,.doc,.docx,.pdf,audio/*">
                 <img id="btnClip" src="${this.images.clip}" class="organaizer__icon">
             </div>
@@ -38,13 +45,14 @@ export default class RenderPage {
       </div>
     `);
     this.conteiner.insertAdjacentElement('beforeend', organaizer);
+    this.header = document.querySelector('.organaizer__header');
     this.previewBox = document.querySelector('.preview-box');
   }
 
   renderMenu() {
-    const menu = document.createElement('ul');
-    menu.classList.add('organaizer__menu');
-    menu.insertAdjacentHTML('beforeend', `
+    this.menu = document.createElement('ul');
+    this.menu.classList.add('organaizer__menu');
+    this.menu.insertAdjacentHTML('beforeend', `
               <li data="menu_photo" class="organaizer__menu-item">                     
                      <img src="${this.images.photo}" alt="photo" class="organaizer__menu-img">
                      <div class="organaizer__menu-title">photo</div>
@@ -76,7 +84,11 @@ export default class RenderPage {
                      <div class="organaizer__menu-amount">0</div>
                </li>
     `);
-    this.conteiner.insertAdjacentElement('beforeend', menu);
+    this.header.insertAdjacentElement('beforeend', this.menu);
+  }
+
+  deletMenu() {
+    this.menu.remove();
   }
 
   renderSearch() {
@@ -115,6 +127,7 @@ export default class RenderPage {
     arrFiles.forEach((item) => {
       const preview = document.createElement('div');
       preview.classList.add('preview-box__card');
+      preview.setAttribute('id', item.id);
       if (item.type.includes('image')) {
         const img = document.createElement('img');
         img.classList.add('preview__img');
@@ -150,8 +163,20 @@ export default class RenderPage {
     });
   }
 
-  deletPreveiw(arr, element) {
+  renderSmileBox() {
+    this.footer = document.querySelector('.footer-conteiner');
+    this.smileBox = document.createElement('div');
+    this.smileBox.classList.add('organaizer__smile-box');
+    this.emojiArr.forEach((item) => {
+      const smile = document.createElement('div');
+      smile.classList.add('organaizer__smile');
+      smile.insertAdjacentText('beforeend', item);
+      this.smileBox.insertAdjacentElement('beforeend', smile);
+    });
+    this.footer.insertAdjacentElement('beforebegin', this.smileBox);
+  }
 
-
+  deletSmileBox() {
+    this.smileBox.remove();
   }
 }

@@ -14,6 +14,8 @@ import pdf from '../assets/images/pdf.png';
 import close from '../assets/images/close.png';
 import audio from '../assets/images/audio-file.png';
 import avi from '../assets/images/avi.png';
+import send from '../assets/images/send.png';
+import recBtn from '../assets/images/rec-button.png';
 
 const images = {
   logo,
@@ -32,5 +34,7 @@ const images = {
   close,
   audio,
   avi,
+  send,
+  recBtn,
 };
 export default images;
