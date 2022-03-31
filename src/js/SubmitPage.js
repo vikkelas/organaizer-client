@@ -8,7 +8,6 @@ export default class SubmitPage {
   constructor() {
     this.images = images;
     this.render = new RenderPage();
-    this.inputHeader = null;
     this.files = [];
     this.btnClosePrev = null;
     this.btnSmile = null;
@@ -18,7 +17,7 @@ export default class SubmitPage {
     this.btnSend = null;
     this.smile = null;
     this.menu = null;
-    this.recordAudio = null;
+    this.audio = null;
   }
 
   initialPage() {
@@ -27,6 +26,7 @@ export default class SubmitPage {
     this.submitBtn();
     this.submitInputFile();
     this.textareSubmit();
+    this.recordAudioInit();
   }
 
   submitBtn() {
@@ -42,10 +42,6 @@ export default class SubmitPage {
           this.render.renderSearch();
         }
         if (item.id === 'btnSmile') {
-          if (this.menu.classList.contains('organaizer__menu--active')) {
-            console.log('active');
-            this.menu.classList.remove('organaizer__menu--active');
-          }
           this.btnCloseSmile = document.querySelector('#btnClose');
           this.render.renderSmileBox();
           this.smile = document.querySelectorAll('.organaizer__smile');
@@ -63,50 +59,60 @@ export default class SubmitPage {
           this.menu.classList.toggle('organaizer__menu--active');
         }
         if (item.id === 'btnSend') {
+          const input = document.getElementById('fileAdd');
+          const formData = new FormData();
+          const files = Array.from(input.files);
+          files.forEach((item) => {
+            formData.append('file', item);
+          });
+          formData.append('text', this.textarea.value);
 
-        }
-      });
-      item.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        if (item.id === 'btnVoice') {
-          item.src = `${this.images.recBtn}`;
-          this.btnInterval = setInterval(() => {
-            item.style.opacity = '0.3';
-            setTimeout(() => {
-              item.style.opacity = '1';
-            }, 300);
-          }, 700);
-          const chunks = [];
-          this.newStream = navigator.mediaDevices.getUserMedia({
-            audio: true,
-            video: false,
-          }).then((stream) => {
-            this.recordAudio = new MediaRecorder(stream);
-            this.recordAudio.addEventListener('start', (evt) => {});
-            this.recordAudio.addEventListener('dataavailable', (evt) => {
-              chunks.push(evt.data);
-            });
-            this.recordAudio.addEventListener('stop', (evt) => {
-              const blob = new Blob(chunks, {
-                type: 'audio/wav',
-              });
-              const response = fetch('http://localhost:8080/file', {
-                body: blob,
-                method: 'POST',
-              }).then((res) => console.log(res));
-            });
-            this.recordAudio.start();
+          fetch('http://localhost:8080/upload', {
+            body: formData,
+            method: 'POST',
+          }).then((respone) => {
+            console.log(respone);
           });
         }
       });
-      item.addEventListener('mouseup', (e) => {
-        e.preventDefault();
-        if (item.id === 'btnVoice') {
-          this.recordAudio.stop();
-          item.src = `${this.images.voice}`;
-          item.style.opacity = '1';
-          clearInterval(this.btnInterval);
-        }
+    });
+  }
+
+  recordAudioInit() {
+    navigator.mediaDevices.getUserMedia({
+      audio: true,
+    }).then((stream) => {
+      const mediaRecorder = new MediaRecorder(stream);
+      const chunks = [];
+
+      document.querySelector('#btnVoice').addEventListener('mousedown', () => {
+        console.log('start');
+        mediaRecorder.start();
+      });
+
+      mediaRecorder.addEventListener('dataavailable', (e) => {
+        console.log('avail');
+        chunks.push(e.data);
+      });
+
+      document.querySelector('#btnVoice').addEventListener('mouseup', () => {
+        console.log('stop');
+        mediaRecorder.stop();
+      });
+
+      mediaRecorder.addEventListener('stop', () => {
+        this.audio = new Blob(chunks, {
+          type: 'audio/wav',
+        });
+        const formData = new FormData();
+        formData.append('file', this.audio);
+        console.log(this.audio);
+        fetch('http://localhost:8080/upload', {
+          body: formData,
+          method: 'POST',
+        }).then((respone) => {
+          console.log(respone);
+        });
       });
     });
   }
